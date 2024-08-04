@@ -74,7 +74,7 @@ class ItemController {
     }
   }
 
-  public clearCache = (_: Request, res: Response) => {
+  public clearCache = (_: Request, res: Response): void => {
     CacheService.clear();
     res.status(204).end();
   };
