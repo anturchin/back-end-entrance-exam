@@ -8,6 +8,12 @@ class CacheService {
     this.maxSize = maxSize;
   }
 
+  public getMaxSize = () => this.maxSize;
+
+  public getCache(): ResultType[] {
+    return this.cache;
+  }
+
   public get = (id: number): ResultType | undefined => {
     return this.cache.find((item) => item.id === id);
   };

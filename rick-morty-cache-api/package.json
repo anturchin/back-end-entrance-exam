@@ -1,6 +1,7 @@
 {
   "scripts": {
     "dev": "nodemon",
+    "start": "tsc && node ./dist/main.js",
     "build": "tsc",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",

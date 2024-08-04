@@ -4,7 +4,7 @@ export type CharacterType = {
 };
 
 export type ResultType = {
-  id: number;
+  id: number | string;
   name: string;
   status: string;
   species: string;
