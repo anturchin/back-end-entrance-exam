@@ -1,35 +1,10 @@
-const express = require('express');
-const swaggerUi = require('swagger-ui-express');
-const swaggerJsdoc = require('swagger-jsdoc');
-const app = express();
-const PORT = process.env.PORT || 3000;
+import { Router, Request, Response } from 'express';
+import itemsController from '../controllers/itemsController';
 
-const options = {
-  definition: {
-    openapi: '3.0.0',
-    info: {
-      title: 'REST API пример',
-      version: '1.0.0',
-      description: 'Пример REST API с CRUD-операциями для ресурса "items"',
-    },
-    servers: [
-      {
-        url: `http://localhost:${PORT}`,
-        description: `Локальный сервер, использующий порт ${PORT}`,
-      },
-    ],
-  },
-  apis: ['./app.js'],
-};
-
-const specs = swaggerJsdoc(options);
-
-app.use(express.json());
-app.use('/docs', swaggerUi.serve, swaggerUi.setup(specs));
+const router = Router();
 
 /**
  * @swagger
- *
  * /:
  *   get:
  *     summary: Проверка работоспособности API
@@ -47,7 +22,7 @@ app.use('/docs', swaggerUi.serve, swaggerUi.setup(specs));
  *                   type: string
  *                   example: "Добро пожаловать в наше REST API!"
  */
-app.get('/', (req, res) => {
+router.get('/', (_: Request, res: Response): void => {
   res.json({ message: 'Добро пожаловать в наше REST API!' });
 });
 
@@ -55,12 +30,11 @@ app.get('/', (req, res) => {
  * @swagger
  * tags:
  *   name: Items
- *   description: Операции с ресурсом "items"
+ *   description: Операции с элементами
  */
 
 /**
  * @swagger
- *
  * /items:
  *   get:
  *     summary: Получить список всех элементов
@@ -77,18 +51,12 @@ app.get('/', (req, res) => {
  *                 items:
  *                   type: array
  *                   items:
- *                     type: object
- *                     properties:
- *                       id:
- *                         type: integer
+ *                     $ref: '#/components/schemas/ResultType'
  */
-app.get('/items', (req, res) => {
-  res.json({ items: [] });
-});
+router.get('/items', itemsController.getAllCharacters.bind(itemsController));
 
 /**
  * @swagger
- *
  * /items/{id}:
  *   get:
  *     summary: Получить элемент по ID
@@ -109,34 +77,43 @@ app.get('/items', (req, res) => {
  *               type: object
  *               properties:
  *                 item:
- *                   type: object
- *                   properties:
- *                     id:
- *                       type: integer
+ *                   $ref: '#/components/schemas/ResultType'
  */
-app.get('/items/:id', (req, res) => {
-  res.json({ item: { id: req.params.id } });
-});
+router.get('/items/:id', itemsController.getCharacterById.bind(itemsController));
 
 /**
  * @swagger
- *
  * /items:
  *   post:
  *     summary: Создать новый элемент
  *     tags:
  *       - Items
  *     requestBody:
+ *       required: true
  *       content:
  *         application/json:
  *           schema:
  *             type: object
  *             properties:
- *               id:
- *                 type: integer
- *           example: {
- *             "id": 1
- *           }
+ *               item:
+ *                 $ref: '#/components/schemas/ResultType'
+ *           example:
+ *             item:
+ *               name: "Rick Sanchez"
+ *               status: "Alive"
+ *               species: "Human"
+ *               type: ""
+ *               gender: "Male"
+ *               origin:
+ *                 name: "Earth"
+ *                 url: "https://rickandmortyapi.com/api/location/1"
+ *               location:
+ *                 name: "Earth"
+ *                 url: "https://rickandmortyapi.com/api/location/20"
+ *               image: "https://rickandmortyapi.com/api/character/avatar/1.jpeg"
+ *               episode: ["https://rickandmortyapi.com/api/episode/1"]
+ *               url: "https://rickandmortyapi.com/api/character/1"
+ *               created: "2017-11-04T18:48:46.250Z"
  *     responses:
  *       201:
  *         description: Созданная запись
@@ -145,19 +122,13 @@ app.get('/items/:id', (req, res) => {
  *             schema:
  *               type: object
  *               properties:
- *                 item:
- *                   type: object
- *                   properties:
- *                     id:
- *                       type: integer
+ *                 newItem:
+ *                   $ref: '#/components/schemas/ResultType'
  */
-app.post('/items', (req, res) => {
-  res.status(201).json({ item: req.body });
-});
+router.post('/items', itemsController.addCharacter.bind(itemsController));
 
 /**
  * @swagger
- *
  * /items/{id}:
  *   put:
  *     summary: Обновить элемент по ID
@@ -170,16 +141,18 @@ app.post('/items', (req, res) => {
  *         schema:
  *           type: integer
  *     requestBody:
+ *       required: true
  *       content:
  *         application/json:
  *           schema:
  *             type: object
  *             properties:
- *               id:
- *                 type: integer
- *           example: {
- *             "id": 1
- *           }
+ *               item:
+ *                 $ref: '#/components/schemas/ResultType'
+ *           example:
+ *             item:
+ *               name: "Updated Name"
+ *               status: "Alive"
  *     responses:
  *       200:
  *         description: Обновленная запись
@@ -189,18 +162,12 @@ app.post('/items', (req, res) => {
  *               type: object
  *               properties:
  *                 item:
- *                   type: object
- *                   properties:
- *                     id:
- *                       type: integer
+ *                   $ref: '#/components/schemas/ResultType'
  */
-app.put('/items/:id', (req, res) => {
-  res.json({ item: { id: req.params.id, ...req.body } });
-});
+router.put('/items/:id', itemsController.updateCharacter.bind(itemsController));
 
 /**
  * @swagger
- *
  * /items/{id}:
  *   delete:
  *     summary: Удалить элемент по ID
@@ -216,10 +183,43 @@ app.put('/items/:id', (req, res) => {
  *       204:
  *         description: Успешное удаление записи
  */
-app.delete('/items/:id', (req, res) => {
-  res.status(204).end();
-});
+router.delete('/items/:id', itemsController.deleteCharacter.bind(itemsController));
 
-app.listen(PORT, () => {
-  console.log(`Сервер запущен на порту ${PORT}`);
-});
+/**
+ * @swagger
+ * /cache/clear:
+ *   post:
+ *     summary: Очистить кэш
+ *     tags:
+ *       - Cache
+ *     responses:
+ *       204:
+ *         description: Кэш очищен
+ */
+router.post('/cache/clear', itemsController.clearCache.bind(itemsController));
+
+/**
+ * @swagger
+ * /cache/size:
+ *   post:
+ *     summary: Установить размер кэша
+ *     tags:
+ *       - Cache
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               size:
+ *                 type: integer
+ *           example:
+ *             size: 100
+ *     responses:
+ *       204:
+ *         description: Размер кэша установлен
+ */
+router.post('/cache/size', itemsController.setCacheSize.bind(itemsController));
+
+export default router;
