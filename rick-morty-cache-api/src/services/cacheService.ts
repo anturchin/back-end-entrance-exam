@@ -1,41 +1,37 @@
-import { CharacterType } from '../models';
+import { ResultType } from '../models';
 
 class CacheService {
-  private cache: Map<string, CharacterType>;
+  private cache: ResultType[] = [];
   private maxSize: number;
 
   constructor(maxSize: number = 100) {
-    this.cache = new Map();
     this.maxSize = maxSize;
   }
 
-  get(key: string): CharacterType | undefined {
-    return this.cache.get(key);
+  public get(id: number): ResultType | undefined {
+    return this.cache.find((item) => item.id === id);
   }
 
-  set(key: string, value: CharacterType): void {
-    if (this.cache.size >= this.maxSize) {
+  public set(value: ResultType): void {
+    if (this.cache.length >= this.maxSize) {
       this.updateCache();
     }
-    this.cache.set(key, value);
+    this.cache.push(value);
   }
 
-  clear(): void {
-    this.cache.clear();
+  public clear(): void {
+    this.cache = [];
   }
 
-  updateCache(): void {
-    const iterator = this.cache.keys();
-    const firstKey = iterator.next().value as string;
-
-    if (firstKey) {
-      this.cache.delete(firstKey);
+  private updateCache(): void {
+    if (this.cache.length > 0) {
+      this.cache.shift();
     }
   }
 
-  setMaxSize(size: number): void {
+  public setMaxSize(size: number): void {
     this.maxSize = size;
-    while (this.cache.size > size) {
+    while (this.cache.length > size) {
       this.updateCache();
     }
   }
