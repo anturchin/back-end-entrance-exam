@@ -23,16 +23,16 @@ class CacheService {
     this.cache = [];
   }
 
-  private updateCache(): void {
-    if (this.cache.length > 0) {
-      this.cache.shift();
-    }
-  }
-
   public setMaxSize(size: number): void {
     this.maxSize = size;
     while (this.cache.length > size) {
       this.updateCache();
+    }
+  }
+
+  private updateCache(): void {
+    if (this.cache.length > 0) {
+      this.cache.shift();
     }
   }
 }

@@ -1,12 +1,12 @@
 import { CharacterType, ResultType } from '../models';
 
 class CharacterService {
-  async getCharacterById(id: string): Promise<ResultType> {
+  public async getCharacterById(id: number): Promise<ResultType> {
     const res = await fetch(`https://rickandmortyapi.com/api/character/${id}`);
     return res.json() as unknown as ResultType;
   }
 
-  async getCharacters(): Promise<CharacterType> {
+  public async getCharacters(): Promise<CharacterType> {
     const res = await fetch(`https://rickandmortyapi.com/api/character`);
     return res.json() as unknown as CharacterType;
   }
