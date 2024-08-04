@@ -1,4 +1,8 @@
 module.exports = {
+  globals: {
+    __dirname: 'readonly',
+    module: 'readonly',
+  },
   root: true,
   parser: '@typescript-eslint/parser',
   plugins: ['@typescript-eslint'],
@@ -17,4 +21,12 @@ module.exports = {
       ],
     },
   ],
+  rules: {
+    '@typescript-eslint/no-misused-promises': [
+      'error',
+      {
+        checksVoidReturn: false,
+      },
+    ],
+  },
 };

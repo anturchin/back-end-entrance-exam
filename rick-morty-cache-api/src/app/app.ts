@@ -1,16 +1,11 @@
 import express, { NextFunction, Request, Response } from 'express';
+import router from '../routes/itemsRoutes';
 
 const app = express();
 
 app.use(express.json());
 
-app.get('/', (req: Request, res: Response): void => {
-  res.json({ message: 'Добро пожаловать в наше REST API!' });
-});
-
-app.use((req: Request, res: Response): void => {
-  res.status(404).json({ message: 'Маршрут не найден' });
-});
+app.use(router);
 
 app.use((req: Request, res: Response): void => {
   res.status(404).json({ message: 'Маршрут не найден' });

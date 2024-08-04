@@ -8,33 +8,33 @@ class CacheService {
     this.maxSize = maxSize;
   }
 
-  public get(id: number): ResultType | undefined {
+  public get = (id: number): ResultType | undefined => {
     return this.cache.find((item) => item.id === id);
-  }
+  };
 
-  public set(value: ResultType): void {
+  public set = (value: ResultType): void => {
     if (this.cache.length >= this.maxSize) {
       this.updateCache();
     }
     this.cache.push(value);
-  }
+  };
 
-  public clear(): void {
+  public clear = (): void => {
     this.cache = [];
-  }
+  };
 
-  public setMaxSize(size: number): void {
+  public setMaxSize = (size: number): void => {
     this.maxSize = size;
     while (this.cache.length > size) {
       this.updateCache();
     }
-  }
+  };
 
-  private updateCache(): void {
+  private updateCache = (): void => {
     if (this.cache.length > 0) {
       this.cache.shift();
     }
-  }
+  };
 }
 
 export default new CacheService();
